@@ -6,6 +6,9 @@ a = list('3090004002007090000870000007500602306009040080280500410000005900001060
 
 #a = list('517600034289004000346205090602000010038006047000000000090000078703400560000000000')
 
+#perposely janked example(for multi solution testing)
+a = list('309000000200709000087000000750060230600904008028050041000000590000106007006000104')
+
 # creates 3 coordinate identifires for each square
 def genBoard(numbers): # each coor has 3 parts, 1st is what box is it in, 2nd is x coor, 3rd is y coor. origin in top left
     box = list(''.join([ j*3 for j in ''.join([ i*3 for i in ['ABC', 'DEF', 'GHI']])])) # coor eg: Ac4 - box 1, x coor is 3, y coor is 4
@@ -36,7 +39,7 @@ def giveBlanks(board):
     return [coor for coor in board if board[coor] == '0']
 
 # solves sudoku
-def solve(board, blanks):
+def solve(board, blanks, solves):
     for coor in blanks:
         for number in range(1, 10):
             if checkLegal(board, coor, str(number)) == True:
@@ -45,14 +48,25 @@ def solve(board, blanks):
                 blanksNew = blanks.copy()
                 blanksNew.remove(coor)
                 if blanksNew == []: return boardNew # if blanksNew has no values, the board is solved
-                result = solve(boardNew, blanksNew)
-                if result != False: return result # returning the board all the way up the recursive algorithm
+                result = solve(boardNew, blanksNew, solves)
+                if result != False: solves.append(result)
         if board[coor] == '0': return False # if the value remains 0, then the pervious steps were wrong
-    return False # the sudoku dosent have a solution
+    return solves
             
         
+def actuallySolve(numbers):
+    solves = []  # couldnt figure out how to return all solutions from main func. so had to make a blank list to which i append sols to
+    board = genBoard(a)
+    printBoard(board)
+    print('\n')
+    blanks = giveBlanks(board)
+    solve(board, blanks, solves)
+    print('solutions:'+'\n')
+    for board in solves: # printing all sols
+        printBoard(board)
+        print('\n')
+    print(f'total {len(solves)} solutions')
+    return solves #returns a list of dict of all solutions
 
-board = genBoard(a)
-printBoard(board)
-print('\n')
-printBoard(solve(board, giveBlanks(board)))
+
+actuallySolve(a)
