@@ -6,14 +6,18 @@ def genBoard(numbers): # each coor has 3 parts, 1st is what box is it in, 2nd is
     return { box.pop(0) + x + str(y): numbers.pop(0) for y in range(1, 10) for x in 'abcdefghi' } # returns a dict
 
 # prints the board
-def printBoard(board): # accepts dictionary
+def printBoard(board, playing = 'no'): # accepts dictionary, playing set if its not an autosolve. ie player is playing
     board = ' '.join([ board[key] for key in board.keys() ] ) # making a string(with space in between) out of values from dict
+    if playing == 'yes': print('   a b c   d e f   g h i\n')
+    num = 0
     for k in range(3):
         for i in range(3):
-            print(str(board[0 : 6])+'| '+str(board[6 : 12]+'| '+str(board[12 : 18])))
+            if playing != 'yes': num = ' '
+            else: num += 1
+            print(str(num) + '  ' + str(board[0 : 6])+'| '+str(board[6 : 12]+'| '+str(board[12 : 18])))
             board = board[18 : ]
         if k != 2:
-            print('------+-------+------')
+            print('   ------+-------+------')
 
 
 def checkLegal(board, coor, number):
@@ -66,8 +70,38 @@ def actuallySolve(numbers, multiple = 'single'):
             print(errmsg)
             return
         printBoard(board)
-        
     return solves #returns a list of dict of all solutions
+
+
+def play(numbers):
+    print('''
+welcome to sudoku.play, 
+you can only edit values of squares which are originally 0
+to edit your previous misplays, first set the required coord to 0
+''')
+    board = genBoard(numbers)
+    printBoard(board, 'yes')
+    print('\n')
+    blanks = giveBlanks(board)
+    illegalError = 'illegal move. fbi is on the way'
+    while True:
+        while True:
+            coor = input('input coordinate: ')
+            for key in board.keys():
+                if coor in key: coor = key
+            if coor in blanks:
+                number = input('input value: ')
+                if number != '0': legal = checkLegal(board, coor, number)
+                else: legal = True
+                if not legal: print(illegalError)
+                else: break
+            else: print('\n coords should be like c4 for x = 3 and y = 4 \n and should also not be one of the originally filled coords \n (origin top left)(first element = a1) \n')
+        board[coor] = number
+        print('\n')
+        printBoard(board, 'yes')
+        print('\n')
+        if giveBlanks(board) == []: break
+    print('you solved it!!')
 
 
 if __name__ == '__main__':
@@ -85,4 +119,5 @@ if __name__ == '__main__':
     # for no solution testing
     #a = list('339000400200709000087000000750060230600904008028050041000000590000106007006000104')
 
-    actuallySolve(a, 'single')
+    actuallySolve(a, 'single') # to auto-solve
+    #play(a) # to play
