@@ -46,7 +46,7 @@ def solve(board, blanks, solves, multiple = 'single'):
 # numbers should be a list of 81 str(numbers) and multiple == 'single'(or leave blank) for only 1 output, multiple != 'single' for all possible outputs (this may take quite a bit of time(depending on how many squares have 0 value))
 def actuallySolve(numbers, multiple = 'single'):
     solves = []  # couldnt figure out how to return all solutions from main func. so had to make a blank list to which i append sols to
-    board = genBoard(a)
+    board = genBoard(numbers)
     printBoard(board)
     print('\n')
     blanks = giveBlanks(board)
