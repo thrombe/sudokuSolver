@@ -1,14 +1,5 @@
 
 
-a = list('309000400200709000087000000750060230600904008028050041000000590000106007006000104')
-
-#a = list('800000000003600000070090200050007000000045700000100030001000068008500010090000400')
-
-#a = list('517600034289004000346205090602000010038006047000000000090000078703400560000000000')
-
-#perposely janked example(for multi solution testing)
-a = list('309000000200709000087000000750060230600904008028050041000000590000106007006000104')
-
 # creates 3 coordinate identifires for each square
 def genBoard(numbers): # each coor has 3 parts, 1st is what box is it in, 2nd is x coor, 3rd is y coor. origin in top left
     box = list(''.join([ j*3 for j in ''.join([ i*3 for i in ['ABC', 'DEF', 'GHI']])])) # coor eg: Ac4 - box 1, x coor is 3, y coor is 4
@@ -16,9 +7,6 @@ def genBoard(numbers): # each coor has 3 parts, 1st is what box is it in, 2nd is
 
 # prints the board
 def printBoard(board): # accepts dictionary
-    if board == False: # if board dosent have a solution
-        print('board is janked m8, try another')
-        return
     board = ' '.join([ board[key] for key in board.keys() ] ) # making a string(with space in between) out of values from dict
     for k in range(3):
         for i in range(3):
@@ -39,7 +27,7 @@ def giveBlanks(board):
     return [coor for coor in board if board[coor] == '0']
 
 # solves sudoku
-def solve(board, blanks, solves):
+def solve(board, blanks, solves, multiple = 'single'):
     for coor in blanks:
         for number in range(1, 10):
             if checkLegal(board, coor, str(number)) == True:
@@ -48,25 +36,53 @@ def solve(board, blanks, solves):
                 blanksNew = blanks.copy()
                 blanksNew.remove(coor)
                 if blanksNew == []: return boardNew # if blanksNew has no values, the board is solved
-                result = solve(boardNew, blanksNew, solves)
-                if result != False: solves.append(result)
+                result = solve(boardNew, blanksNew, solves, multiple)
+                if result != False:
+                    if multiple != 'single': solves.append(result) # appending all solutions if multisolve is on
+                    else: return result # if multi solve is off
         if board[coor] == '0': return False # if the value remains 0, then the pervious steps were wrong
-    return solves
+    return solves # this line dosent really get executed, it always returns earlier
             
-        
-def actuallySolve(numbers):
+# numbers should be a list of 81 str(numbers) and multiple == 'single'(or leave blank) for only 1 output, multiple != 'single' for all possible outputs (this may take quite a bit of time(depending on how many squares have 0 value))
+def actuallySolve(numbers, multiple = 'single'):
     solves = []  # couldnt figure out how to return all solutions from main func. so had to make a blank list to which i append sols to
     board = genBoard(a)
     printBoard(board)
     print('\n')
     blanks = giveBlanks(board)
-    solve(board, blanks, solves)
-    print('solutions:'+'\n')
-    for board in solves: # printing all sols
+    board = solve(board, blanks, solves, multiple)
+    errmsg = 'board is janked m8, try another'
+    if multiple != 'single':
+        if solves == [] : # if board has no solution
+            print(errmsg)
+            return
+        print('solutions:'+'\n')
+        for board in solves: # printing all sols
+            printBoard(board)
+            print('\n')
+        print(f'total {len(solves)} solutions')
+    else:
+        if board == False:
+            print(errmsg)
+            return
         printBoard(board)
-        print('\n')
-    print(f'total {len(solves)} solutions')
+        
     return solves #returns a list of dict of all solutions
 
 
-actuallySolve(a)
+if __name__ == '__main__':
+    
+    #a = list('309000400200709000087000000750060230600904008028050041000000590000106007006000104')
+
+    # this is arguably the hardest sudoku puzzle (takes a long time if searching for multiple solutions)
+    a = list('800000000003600000070090200050007000000045700000100030001000068008500010090000400')
+
+    #a = list('517600034289004000346205090602000010038006047000000000090000078703400560000000000')
+
+    #perposely janked example(for multi solution testing)
+    #a = list('309000000200709000087000000750060230600904008028050041000000590000106007006000104')
+
+    # for no solution testing
+    #a = list('339000400200709000087000000750060230600904008028050041000000590000106007006000104')
+
+    actuallySolve(a, 'single')
