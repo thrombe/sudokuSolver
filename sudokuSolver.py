@@ -4,10 +4,22 @@ a = list('3090004002007090000870000007500602306009040080280500410000005900001060
 
 
 def genBoard(numbers):
-    return { str(i)+str(j): numbers.pop(0) for i in range(1, 10) for j in range(1, 10) }
+    listt = list(('A'*3+'B'*3+'C'*3)*3+('D'*3+'E'*3+'F'*3)*3+('G'*3+'H'*3+'I'*3)*3)
+    return { listt.pop(0)+i+str(j): numbers.pop(0) for i in 'abcdefghi' for j in range(1, 10) }
+
+
+def printBoard(board): # accepts dictionary
+	board = ' '.join([ board[key] for key in board.keys() ] )
+	for k in range(3):
+		for i in range(3):
+			print(str(board[0 : 6])+'| '+str(board[6 : 12]+'| '+str(board[12 : 18])))
+			board = board[18 : ]
+		if k != 2:
+			print('------+-------+------')
+
 
 def checkLegal(board):
-    # 3 coordinate system
-    #2 coor system
+    pass
+
 
 print(genBoard(a))
