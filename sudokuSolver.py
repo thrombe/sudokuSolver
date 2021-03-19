@@ -3,9 +3,9 @@
 a = list('309000400200709000087000000750060230600904008028050041000000590000106007006000104')
 
 
-def genBoard(numbers):
-    listt = list(('A'*3+'B'*3+'C'*3)*3+('D'*3+'E'*3+'F'*3)*3+('G'*3+'H'*3+'I'*3)*3)
-    return { listt.pop(0)+i+str(j): numbers.pop(0) for i in 'abcdefghi' for j in range(1, 10) }
+def genBoard(numbers): # creates 3 coordinate identifires for each square
+    square = list(''.join([ j*3 for j in ''.join([ i*3 for i in ['ABC', 'DEF', 'GHI']])]))
+    return { square.pop(0)+i+str(j): numbers.pop(0) for i in 'abcdefghi' for j in range(1, 10) }
 
 
 def printBoard(board): # accepts dictionary
