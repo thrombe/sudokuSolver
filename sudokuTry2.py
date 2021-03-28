@@ -39,11 +39,14 @@ class Square:
     
     def setValue(self, value, blanks, board): # sets the value and discards it from neghbour's values
         #print(self.values)#
-        if not legal(board, self, value): return False
+        #if not legal(board, self, value): return False
         self.values = value
         blanks.remove(self)
         for neighbour in self.neighbours:
+            #print(neighbour in blanks)###
+            #print(value, neighbour.values)###
             neighbour.values.discard(value)
+            #print(neighbour.values)###
             if neighbour.values == set():
                 #print('fal1')####
                 return False # if no value is suitable for a cell, something went wrong
@@ -61,7 +64,7 @@ def genBoard(numbers): # creates 3 coordinate identifires for each square and se
             for cord, sq in board.items():
                 if sq == square: continue
                 if coord[0] in cord or coord[1] in cord or coord[2] in cord:
-                    if sq.values != 0 and type(sq.values) != type(set()): square.values.discard(sq.values) # only leave values that are not in its neighbours
+                    if sq.values != 0 and type(sq.values) == type(0): square.values.discard(sq.values) # only leave values that are not in its neighbours
                     if sq.values == 0 or type(sq.values) == type(set()):
                         square.neighbours.add(sq) # shove neighbours into the list
             blanks.add(square)
@@ -131,6 +134,7 @@ def solve(board, blanks, mainSolve = 0):
 
     leastVal = least.values.copy()
     for val in leastVal:
+        neiVal = [nei for nei in least.neighbours if val in nei.values]
         valueResult = least.setValue(val, blanks, board) # take a guess at what the value might be
         if valueResult == False: continue
         boardNew = copy.deepcopy(board)
@@ -141,11 +145,12 @@ def solve(board, blanks, mainSolve = 0):
         valueResult = solve(boardNew, blanksNew)
         #if valueResult == False: return False
         if type(valueResult) == type({'key' : 'val'}):
-            print('bor5', len(valueResult))###
-            printBoard(valueResult)###
+            #print('bor5', len(valueResult))###
+            #printBoard(valueResult)###
             return valueResult
-        for neighbour in least.neighbours: # undo the guess we took
-            neighbour.values.add(val)
+        #for neighbour in least.neighbours: # undo the guess we took
+        #    neighbour.values.add(val)
+        for nei in neiVal: nei.values.add(val)
         blanks.add(least)
         least.values = leastVal
     #print('fal6')###
@@ -178,9 +183,10 @@ if __name__ == '__main__':
     def sob():
         board, blanks = genBoard(a)
         board = solve(board, blanks, 1)
+        return board
     
     board = sob()
-    #printBoard(board)
+    printBoard(board)
     #for s in board.values(): print(s.values)####
     #printBoard(board)
     print(time.time() - start)
