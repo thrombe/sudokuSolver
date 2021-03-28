@@ -39,8 +39,8 @@ class Square:
         #return Square(self.neighbours, self.values) # I DIDNT COPY CORRECT NEIGHBOURS IN HERE
 
 
-# creates 3 coordinate identifires for each square and setup square attributes
-def genBoard(numbers): # each coor has 3 parts, 1st is what box is it in, 2nd is x coor, 3rd is y coor. origin in top left
+def genBoard(numbers): # creates 3 coordinate identifires for each square and setup square attributes
+    # each coor has 3 parts, 1st is what box is it in, 2nd is x coor, 3rd is y coor. origin in top left
     box = list(''.join([ j*3 for j in ''.join([ i*3 for i in ['ABC', 'DEF', 'GHI']])])) # coor eg: Ac4 - box 1, x coor is 3, y coor is 4
     board =  { box.pop(0) + x + str(y): Square(set(), int(numbers.pop(0))) for y in range(1, 10) for x in 'abcdefghi' } # returns a dict
     blanks = set()
@@ -56,8 +56,8 @@ def genBoard(numbers): # each coor has 3 parts, 1st is what box is it in, 2nd is
             blanks.add(square)
     return board, blanks
 
-# prints the board
-def printBoard(board, playing = 'no'): # accepts dictionary, playing set to yes if its not an autosolve. ie player is playing
+def printBoard(board, playing = 'no'): # prints the board
+    # accepts dictionary, playing set to yes if its not an autosolve. ie player is playing
     board = ' '.join([ str(square.values) for square in board.values() ] ) # making a string(with space in between) out of values from dict
     if playing == 'yes': print('   a b c   d e f   g h i\n')
     num = 0
