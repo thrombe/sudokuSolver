@@ -24,18 +24,46 @@ how this helps?:
 
 '''
 
-class square:
-    def __init__(self, hori, vert, box, values):
-        self.hori = hori
+class Square:
+    def __init__(self, neighbours, values):
+        self.neighbours = neighbours # shove in only empty squares
+        self.values = values
+    
+    def setValue(self, value): # sets the value and discards it from neghbour's values
+        self.values = value
+        #print(self, self.neighbours)##
+        for neighbour in self.neighbours:
+            #print(neighbour.values, value, self, neighbour)##
+            neighbour.values.discard(value)
+            if not neighbour.values: return False # if no value is suitable for a cell, something went wrong
+            neighbour.neighbours.discard(self)
+        return True # if nothing went wrong
 
-# creates 3 coordinate identifires for each square
+
+# creates 3 coordinate identifires for each square and setup square attributes
 def genBoard(numbers): # each coor has 3 parts, 1st is what box is it in, 2nd is x coor, 3rd is y coor. origin in top left
     box = list(''.join([ j*3 for j in ''.join([ i*3 for i in ['ABC', 'DEF', 'GHI']])])) # coor eg: Ac4 - box 1, x coor is 3, y coor is 4
-    return { box.pop(0) + x + str(y): numbers.pop(0) for y in range(1, 10) for x in 'abcdefghi' } # returns a dict
+    board =  { box.pop(0) + x + str(y): Square(set(), int(numbers.pop(0))) for y in range(1, 10) for x in 'abcdefghi' } # returns a dict
+    blanks = set()
+    for coord, square in board.items():
+        if square.values == 0:
+            square.values = set(i for i in range(1, 10))
+            for cord, sq in board.items():
+                if sq == square: continue
+                if coord[0] in cord or coord[1] in cord or coord[2] in cord:
+                    #print(square.values, sq.values, type(sq.values), type(set()))###
+                    if sq.values != 0 and type(sq.values) != type(set()): square.values.discard(sq.values) # only leave values that are not in its neighbours
+                    if sq.values == 0 or type(sq.values) == type(set()):
+                        square.neighbours.add(sq) # shove neighbours into the list
+                        #print(sq.values)##
+            blanks.add(square)
+    #print(blanks, board)###
+    return board, blanks
+    
 
 # prints the board
 def printBoard(board, playing = 'no'): # accepts dictionary, playing set to yes if its not an autosolve. ie player is playing
-    board = ' '.join([ board[key] for key in board.keys() ] ) # making a string(with space in between) out of values from dict
+    board = ' '.join([ str(square.values) for square in board.values() ] ) # making a string(with space in between) out of values from dict
     if playing == 'yes': print('   a b c   d e f   g h i\n')
     num = 0
     for k in range(3):
@@ -48,7 +76,8 @@ def printBoard(board, playing = 'no'): # accepts dictionary, playing set to yes 
             print('   ------+-------+------')
 
 
-def checkLegal(board, coor, number):
+'''
+def checkLegal(board, coor, number): # not needed anymore for autosolve
     for id in coor: # next line returns true or false to the var after checking for vertical, horizontal, in box legallity of the move
         legal = number not in [ board[key] for key in board.keys() if id in key]
         if not legal: return False # returning false if its not legal in any single way
@@ -57,7 +86,32 @@ def checkLegal(board, coor, number):
 # gives a list of coords without a true value
 def giveBlanks(board):
     return [coor for coor in board if board[coor] == '0']
+'''
 
+def EZsquares(blanks):
+    blanksC = blanks.copy()
+    for square in blanksC:
+        length = len(square.values)
+        if length == 1:
+            #print(square.values, 'EZ')###
+            square.setValue(square.values)
+            blanks.remove(square)
+
+
+def solve(board, blanks):
+    length = 0
+    #print(blanks)####
+    while length != len(blanks):
+        length = len(blanks) # add check for len(blanks) != 0 if something fails
+        EZsquares(blanks)
+    if len(blanks) == 0: return board
+
+   # write logic for when every element in blanks has multiple possible values $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+   
+
+
+'''
+############################################
 # solves sudoku
 def solve(board, blanks, solves, multiple = 'single'):
     for coor in blanks:
@@ -99,6 +153,7 @@ def actuallySolve(numbers, multiple = 'single'):
             return
         printBoard(board)
     return solves #returns a list of dict of all solutions
+'''
 
 """
 def play(numbers):
@@ -152,6 +207,7 @@ if __name__ == '__main__':
     
     #import time
     #start = time.time()
-    actuallySolve(a, 'single') # to auto-solve
+    board, blanks = genBoard(a)
+    board = solve(board, blanks)
     #play(a) # to play
     #print(str(time.time()-start))
