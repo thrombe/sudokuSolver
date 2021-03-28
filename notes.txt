@@ -1,0 +1,21 @@
+'''
+TODO
+    sudoku generator - very hard. basically try to solve after removing stuff for single sol puzzles
+    ## DONE  ##   more human like method of solving
+                    store a list of possible values of each square and put the value in if only 1 available. then remove this value from the corresponding lists of squares
+                    integrate both methods for faster search
+    ## not needed  ##   if not previous method, randomise what/ numbers and squares to try
+
+text
+    create square objects
+    square.hori, square.vert, square.box, square.values, 
+    if a value is confirmed, remove that value from all objects from square.hori,vert,box
+    how to try values that we cant confirm? (no square.values has just 1 value left):
+        copy.copy() objects in a recursive function
+    while removing values from square.values, check if only 1 value remaining. and maybe also 2 and 3 for priority
+    maintain list of empty squares for loop (was already doing this)
+
+    how this helps?:
+        dont have to loop through all squares just to check the if it lies in same box etc
+        square.values would all for checking only useful values and not check if its valid
+'''
