@@ -6,8 +6,7 @@ TODO
         store a list of possible values of each square and put the value in if only 1 available. then remove this value from the corresponding lists of squares
         integrate both methods for faster search
     if not previous method, randomise what/ numbers and squares to try
-'''
-'''
+
 text
     create square objects
     square.hori, square.vert, square.box, square.values, 
@@ -21,23 +20,35 @@ text
         dont have to loop through all squares just to check the if it lies in same box etc
         square.values would all for checking only useful values and not check if its valid
 '''
+import copy
+
+def legal(board, square, val):
+    for coor, sq in board.items():
+        if sq == square: break
+    for coor2, sq in board.items():
+        if coor[0] in coor2 or coor[1] in coor2 or coor[2] in coor2:
+            if type(sq.values) == type(0):
+                if val == sq.values: return False
+    return True
+
 
 class Square:
     def __init__(self, neighbours, values):
         self.neighbours = neighbours # shove in only empty squares
         self.values = values
     
-    def setValue(self, value): # sets the value and discards it from neghbour's values
+    def setValue(self, value, blanks, board): # sets the value and discards it from neghbour's values
+        #print(self.values)#
+        if not legal(board, self, value): return False
         self.values = value
+        blanks.remove(self)
         for neighbour in self.neighbours:
             neighbour.values.discard(value)
-            if neighbour.values == set(): return False # if no value is suitable for a cell, something went wrong
+            if neighbour.values == set():
+                #print('fal1')####
+                return False # if no value is suitable for a cell, something went wrong
             neighbour.neighbours.discard(self)
         return True # if nothing went wrong
-    
-    #def copy(self): #returns a copy of square object
-        #return Square(self.neighbours, self.values) # I DIDNT COPY CORRECT NEIGHBOURS IN HERE
-
 
 def genBoard(numbers): # creates 3 coordinate identifires for each square and setup square attributes
     # each coor has 3 parts, 1st is what box is it in, 2nd is x coor, 3rd is y coor. origin in top left
@@ -70,50 +81,77 @@ def printBoard(board, playing = 'no'): # prints the board
         if k != 2:
             print('   ------+-------+------')
 
-def EZsquares(blanks): # eliminates easy squares with only 1 possible value
+def EZsquares(blanks, board): # eliminates easy squares with only 1 possible value
     blanksC = blanks.copy() # so that it dosent change while loop
     for square in blanksC:
         length = len(square.values)
         if length == 1:
-            valueResult = square.setValue(list(square.values)[0])
-            if valueResult == False: return False
-            blanks.remove(square)
+            valueResult = square.setValue(list(square.values)[0], blanks, board)
+            if valueResult == False:
+                #print('fal2')###
+                return False
     return True
 
-def EZloop(blanks): # loops eliminating easy squares till no ez squares left
+def EZloop(board, blanks): # loops eliminating easy squares till no ez squares left
     length = 0
     while length != len(blanks):
-        length = len(blanks) # add check for len(blanks) != 0 if something fails
-        valueResult = EZsquares(blanks)
-        if valueResult == False: return False
-    if len(blanks) == 0: return board
-
-
-# I DIDNT COPY NEIGHBOUS PROPERLY
-'''
-def boardCopy(board, blanks):
-    boardNew = {}
-    blanksNew = set()
-    least = None
-    num = 10
-    for coor, square in board.items():
-        squareNew = square.copy()
-        boardNew[coor] = squareNew
-        if type(square.values) == type(set()):
-            blanksNew.add(squareNew)
-            if len(square.values) < num: least = squareNew
-    return boardNew, blanksNew, least
-'''
+        length = len(blanks)
+        valueResult = EZsquares(blanks, board)
+        if valueResult == False:
+            #print('fal3')###
+            return False
+    if len(blanks) == 0:
+        #print('bor3')
+        return board
 
 def solve(board, blanks, mainSolve = 0):
-    
-    valueResult = EZloop(blanks)
-    if valueResult == False: return False
-    elif type(valueResult) == type({'key': 'val'}): return board
+    #######
+    #print(len(blanks))###
+    if len(blanks) == 0:
+        printBoard(board)###
+        #return board
+    ########
+
+    valueResult = EZloop(board, blanks)
+    if valueResult == False: 
+        #print('fal4')###
+        return False
+    elif type(valueResult) == type({'key': 'val'}):
+        #print('bor4')###
+        return board
 
     #return board##
     # logic for when every element in blanks has multiple possible values
-   
+    num = 10
+    for square in blanks: # shift this inside EZsquares
+        if len(square.values) < num:
+            least = square
+            num = len(square.values)
+    #print(least.values)##
+
+    leastVal = least.values.copy()
+    for val in leastVal:
+        valueResult = least.setValue(val, blanks, board) # take a guess at what the value might be
+        if valueResult == False: continue
+        boardNew = copy.deepcopy(board)
+        blanksNew = set()
+        num = 10
+        for square in boardNew.values(): #create a copy of board and blanks
+            if type(square.values) == type(set()): blanksNew.add(square)
+        valueResult = solve(boardNew, blanksNew)
+        #if valueResult == False: return False
+        if type(valueResult) == type({'key' : 'val'}):
+            print('bor5', len(valueResult))###
+            printBoard(valueResult)###
+            return valueResult
+        for neighbour in least.neighbours: # undo the guess we took
+            neighbour.values.add(val)
+        blanks.add(least)
+        least.values = leastVal
+    #print('fal6')###
+    return False
+
+    
 
 if __name__ == '__main__':
     
@@ -123,7 +161,7 @@ if __name__ == '__main__':
         #a = list('517600034289004000346205090602000010038006047000000000090000078703400560000000000')
 
         # this is arguably the hardest sudoku puzzle (takes a long time if searching for multiple solutions)
-        #a = list('800000000003600000070090200050007000000045700000100030001000068008500010090000400')
+        a = list('800000000003600000070090200050007000000045700000100030001000068008500010090000400')
 
         # literally unsolvable puzzle
         #a = list('000005080000601043000000000010500000000106000300000005530000061000000004000000000')
@@ -137,9 +175,12 @@ if __name__ == '__main__':
     import time
     start = time.time()
 
-    board, blanks = genBoard(a)
-    board = solve(board, blanks, 1)
+    def sob():
+        board, blanks = genBoard(a)
+        board = solve(board, blanks, 1)
     
-    for s in board.values(): print(s.values)####
+    board = sob()
     #printBoard(board)
-    #print(time.time() - start)
+    #for s in board.values(): print(s.values)####
+    #printBoard(board)
+    print(time.time() - start)
