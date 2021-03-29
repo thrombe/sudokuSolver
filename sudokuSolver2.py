@@ -90,8 +90,6 @@ def solve(board, blanks): # solves and returns board (a bit randomness is involv
         least.values = leastVal
     return False
 
-
-
 def startSolve(numbers):
         board, blanks = genBoard(numbers)
         board = solve(board, blanks)
@@ -117,6 +115,9 @@ if __name__ == '__main__':
 
         # for no solution testing
         #a = list('339000400200709000087000000750060230600904008028050041000000590000106007006000104')
+
+        #this one takes 50 some seconds. bring it down to 11 secs to be better than the other guy
+        a = list('....14....3....2...7..........9...3.6.1.............8.2.....1.4....5.6.....7.8...'.replace('.', '0'))
     
     import time
     start = time.time()
