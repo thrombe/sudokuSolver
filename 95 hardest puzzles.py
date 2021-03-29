@@ -109,4 +109,15 @@ for i in a:
         r += i
         if j % 81 == 0: r += '\n'
 r = r.strip().split('\n')
-print(r)
+#print(r)
+
+from sudokuSolver2 import *
+import time
+stat = time.time()
+for i in r:
+    one = time.time()
+    board = startSolve(list(i))
+    printBoard(board)
+    print(time.time() - one)
+    print('\n')
+print(time.time() - stat)

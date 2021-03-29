@@ -77,15 +77,26 @@ def solve(board, blanks): # solves and returns board (a bit randomness is involv
     for val in leastVal: # we only have to check if this square has any possible value or not. if this dosent, the board is janked
         neiVal = [nei for nei in least.neighbours if val in nei.values] # record what neighbours used to contain val before guess
         valueResult = least.setValue(val, blanks, board) # take a guess at what the value might be
-        if valueResult == False: continue
-        boardNew, blanksNew = copy.deepcopy(board), set() #create a copy of board and blanks for recursion
-        for square in boardNew.values():
-            if type(square.values) == type(set()): blanksNew.add(square)
+        if valueResult == False: continue # if setValue fails
+        
+        board['blanks'] = blanks #create a copy of board and blanks for recursion
+        boardNew = copy.deepcopy(board)
+        board.pop('blanks') # shoved blanks in board just to be able to deepcopy it properly
+        blanksNew = boardNew.pop('blanks')
+        
         valueResult = solve(boardNew, blanksNew)
         if type(valueResult) == type({'key' : 'val'}): return valueResult
         for nei in neiVal: nei.values.add(val) # undo the effects of guessing for backtracking
         least.values = leastVal
     return False
+
+
+
+def startSolve(numbers):
+        board, blanks = genBoard(numbers)
+        board = solve(board, blanks)
+        if board != False: return board
+        else: print('board is janked')
 
 
 if __name__ == '__main__':
@@ -109,13 +120,6 @@ if __name__ == '__main__':
     
     import time
     start = time.time()
-
-    def startSolve():
-        board, blanks = genBoard(a)
-        board = solve(board, blanks)
-        if board != False: printBoard(board)
-        else: print('board is janked')
-        return board
-    
-    startSolve()
+    board = startSolve(a)
+    if board: printBoard(board)
     print(time.time() - start)
