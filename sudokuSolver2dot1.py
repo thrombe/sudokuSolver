@@ -1,4 +1,4 @@
-
+# this version chooses least used numbers across the board(from square.values) instead of random ones in the square.values. - E3
 import copy
 
 class Square:
