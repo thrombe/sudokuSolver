@@ -21,6 +21,7 @@ text
 '''
 
 https://stackoverflow.com/questions/1518346/optimizing-the-backtracking-algorithm-solving-sudoku/48239141#48239141
+https://stackoverflow.com/a/48239018
 
     The next blank cell can be chosen in the following ways:
         A - the first cell from left to right, from top to bottom

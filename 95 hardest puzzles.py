@@ -111,13 +111,37 @@ for i in a:
 r = r.strip().split('\n')
 #print(r)
 
+#outfile = ''
+outfile = open('/storage/emulated/0/0Python/Git/sudokuSolver/95solved.txt', 'w')
+
+def printy(string):
+    #if outfile:
+    print(string, file = outfile)
+    print(string)
+
+
+def printBoardy(board, playing = 'no'): # prints the board
+    # accepts dictionary, playing set to yes if its not an autosolve. ie player is playing
+    board = ' '.join([ str(square.values) for square in board.values() ] ) # making a string(with space in between) out of values from dict
+    if playing == 'yes': print('   a b c   d e f   g h i\n')
+    num = 0
+    for k in range(3):
+        for i in range(3):
+            if playing != 'yes': num = ' '
+            else: num += 1
+            printy(str(num) + '  ' + str(board[0 : 6])+'| '+str(board[6 : 12]+'| '+str(board[12 : 18])))
+            board = board[18 : ]
+        if k != 2:
+            printy('   ------+-------+------')
+
 from sudokuSolver2 import *
 import time
 stat = time.time()
 for i in r:
     one = time.time()
     board = startSolve(list(i))
-    printBoard(board)
-    print(time.time() - one)
-    print('\n')
-print(time.time() - stat)
+    printBoardy(board)
+    printy(time.time() - one)
+    printy('\n')
+    # exit()
+printy(time.time() - stat)
